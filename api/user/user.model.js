@@ -81,37 +81,6 @@ var UserSchema = new Schema({
 
 UserSchema.index({name: 'text', email: 'text'});
 
-UserSchema.post('create', function() {
-    //let avatar = {
-    //    user: this._id,
-    //    kind: 2
-    //};
-    //
-    //let cover = {
-    //    user: this._id,
-    //    kind: 3
-    //};
-    //
-    //let timeline = {
-    //    user: this._id,
-    //    kind: 1
-    //};
-    //
-    //let albumAvatar = new Album(avatar);
-    //let albumCover = new Album(cover);
-    //let albumTimeline = new Album(timeline);
-    //
-    //albumAvatar.save();
-    //albumCover.save();
-    //albumTimeline.save();
-    //
-    //this.avatarAlbum = albumAvatar._id;
-    //this.coverAlbum = albumCover._id;
-    //this.timelineAlbum = albumTimeline._id;
-    //
-    //this.save();
-});
-
 /**
  * Virtuals
  */

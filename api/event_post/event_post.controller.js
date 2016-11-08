@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var EventPost = require('./event_post.model');
 var Notification = require('../notification/notification.model');
+var Subscription = require('../subscription/subscription.model');
 var Photo = require('../photo/photo.model');
 var Album = require('../album/album.model');
 var User = require('../user/user.model');
@@ -38,9 +39,9 @@ exports.create = function (req, res) {
                 if (err || !newEvent) {
                     return res.json(500, err);
                 }
-                Subscription.create({object:newEvent._id, owner:user._id, kind:0});
+                Subscription.create({object: newEvent._id, owner: user._id, kind: 0});
                 if (user._id.toString() != newEvent.timeline.toString()) {
-                    Subscription.create({object:newEvent._id, owner:newEvent.timeline, kind:15});
+                    Subscription.create({object: newEvent._id, owner: newEvent.timeline, kind: 15});
                     Notification.create({
                         owner: user._id,
                         receiver: newEvent.timeline,
@@ -89,19 +90,27 @@ exports.create = function (req, res) {
                             if (numberOfSuccess == photos.length) {
                                 if (numberOfSuccess == savedPhotos.length) {
                                     album.numberOfPhoto = album.numberOfPhoto + photos.length;
-                                    album.save(function(err) {
+                                    album.save(function (err) {
                                         if (err) {
                                             return res.json(500, err);
                                         }
                                         for (let s = 0; s < savedPhotos.length; s++) {
-                                            Subscription.create({object:savedPhotos[s]._id, owner:user._id, kind:1});
+                                            Subscription.create({object: savedPhotos[s]._id, owner: user._id, kind: 1});
                                             if (user._id.toString() != newEvent.timeline.toString()) {
-                                                Subscription.create({object:savedPhotos[s]._id, owner:newEvent.timeline, kind:16});
+                                                Subscription.create({
+                                                    object: savedPhotos[s]._id,
+                                                    owner: newEvent.timeline,
+                                                    kind: 16
+                                                });
                                             }
                                         }
-                                        Subscription.create({object:newEvent._id, owner:user._id, kind:0});
+                                        Subscription.create({object: newEvent._id, owner: user._id, kind: 0});
                                         if (user._id.toString() != newEvent.timeline.toString()) {
-                                            Subscription.create({object:newEvent._id, owner:newEvent.timeline, kind:15});
+                                            Subscription.create({
+                                                object: newEvent._id,
+                                                owner: newEvent.timeline,
+                                                kind: 15
+                                            });
                                             Notification.create({
                                                 owner: user._id,
                                                 receiver: newEvent.timeline,
@@ -129,15 +138,15 @@ exports.create = function (req, res) {
                 });
             }
             if (user._id.toString == dataEvent.timeline.toString()) {
-                Album.findOne({user:user._id, kind:1},function(err, album){
+                Album.findOne({user: user._id, kind: 1}, function (err, album) {
                     if (err) {
                         return res.json(500, err);
                     }
                     if (album) {
                         createEvent(album);
                     } else {
-                        let timelineAlbum = new Album({user:user._id,kind:1});
-                        timelineAlbum.save(function(err, newAlbum){
+                        let timelineAlbum = new Album({user: user._id, kind: 1});
+                        timelineAlbum.save(function (err, newAlbum) {
                             if (err) {
                                 return res.json(500, err);
                             }
@@ -146,15 +155,15 @@ exports.create = function (req, res) {
                     }
                 });
             } else {
-                Album.findOne({user:dataEvent.timeline, kind:1},function(err, album){
+                Album.findOne({user: dataEvent.timeline, kind: 1}, function (err, album) {
                     if (err) {
                         return res.json(500, err);
                     }
                     if (album) {
                         createEvent(album);
                     } else {
-                        let timelineAlbum = new Album({user:dataEvent.timeline,kind:1});
-                        timelineAlbum.save(function(err, newAlbum){
+                        let timelineAlbum = new Album({user: dataEvent.timeline, kind: 1});
+                        timelineAlbum.save(function (err, newAlbum) {
                             if (err) {
                                 return res.json(500, err);
                             }
@@ -209,9 +218,13 @@ exports.update = function (req, res) {
                                             return res.json(500, err);
                                         }
                                         album.numberOfPhoto = album.numberOfPhoto + savedPhotos.length;
-                                        album.save(function(err, updatedAlbum) {
+                                        album.save(function (err, updatedAlbum) {
                                             for (let s = 0; s < savedPhotos.length; s++) {
-                                                Subscription.create({object:savedPhotos[s]._id, owner:event.user, kind:1});
+                                                Subscription.create({
+                                                    object: savedPhotos[s]._id,
+                                                    owner: event.user,
+                                                    kind: 1
+                                                });
                                             }
                                             return res.json(200, {code: 200, message: 'Successful'});
                                         });
@@ -265,14 +278,14 @@ exports.update = function (req, res) {
                             for (let i = 0; i < photos.length; i++) {
                                 let albumId = photos[i].album;
                                 albums[albumId] = 0;
-                                photos[i].remove(function(err){
+                                photos[i].remove(function (err) {
                                     if (!err) {
                                         albums[albumId] = albums[albumId] + 1;
                                     }
                                     numberToRemove++;
                                     if (numberToRemove == photos.length) {
                                         for (let albumKeyId in albums) {
-                                            Album.findById(albumKeyId, function(err, album){
+                                            Album.findById(albumKeyId, function (err, album) {
                                                 if (!err && album) {
                                                     album.numberOfPhoto = album.numberOfPhoto - albums[albumKeyId];
                                                     album.save();
@@ -346,7 +359,7 @@ exports.update = function (req, res) {
                             });
                         }
 
-                        var completionEdit = function() {
+                        var completionEdit = function () {
                             if (photosToEdit.length > 0) {
                                 let numberToEdit = 0;
                                 for (let i = 0; i < photosToEdit.length; i++) {
@@ -362,7 +375,7 @@ exports.update = function (req, res) {
                             }
                         }
 
-                        var completionRemove = function() {
+                        var completionRemove = function () {
                             if (photosToRemove.length > 0) {
                                 let numberToRemove = 0;
                                 let albums = {};
@@ -414,7 +427,7 @@ exports.update = function (req, res) {
                                         for (let i = 0; i < photosToCreate.length; i++) {
                                             photosToCreate[i].album = album._id;
                                             photosToCreate[i].save(function (err, newPhoto) {
-                                                Subscription.create({object:newPhoto._id, owner:event.user, kind:1});
+                                                Subscription.create({object: newPhoto._id, owner: event.user, kind: 1});
                                                 numberToCreate++;
                                                 if (numberToCreate == photosToCreate.length) {
                                                     album.numberOfPhoto = album.numberOfPhoto + photosToCreate.length;
@@ -459,11 +472,11 @@ exports.info = function (req, res) {
                 return res.json(500, err);
             }
             if (!event) {
-                return res.json(200, {code: 404, message:'Event not found'});
+                return res.json(200, {code: 404, message: 'Event not found'});
             }
-            let likeFunction = function(event, completion) {
+            let likeFunction = function (event, completion) {
                 if (event.numberOfLike > 0) {
-                    LikePost.findOne({event:event._id,user:req.body.user._id}, function(err, like){
+                    LikePost.findOne({event: event._id, user: req.body.user._id}, function (err, like) {
                         if (err) {
                             completion(err, event);
                         } else {
@@ -476,13 +489,32 @@ exports.info = function (req, res) {
                         }
                     });
                 } else {
-                    event.like = {like:false};
+                    event.like = {like: false};
                     completion(null, event);
                 }
             }
 
-            let photoFunction = function(event, completion) {
+            let subFuntion = function (event, completion) {
                 likeFunction(event, function (err, event) {
+                    if (!err) {
+                        Subscription.findOne({object: event._id, owner: req.body.user._id}, function (err, sub) {
+                            if (err) {
+                                completion(err, event);
+                            } else {
+                                if (sub) {
+                                    event.sub = sub;
+                                }
+                                completion(null, event);
+                            }
+                        });
+                    } else {
+                        completion(err, event);
+                    }
+                });
+            }
+
+            let photoFunction = function (event, completion) {
+                subFuntion(event, function (err, event) {
                     if (!err) {
                         if (event.numberOfPhoto > 0) {
                             Photo.find({event: event._id})
@@ -498,7 +530,10 @@ exports.info = function (req, res) {
                                             event.photos = photos;
                                             for (let i = 0; i < event.photos.length; i++) {
                                                 if (event.photos[i].numberOfLike > 0) {
-                                                    LikePhoto.findOne({photo: event.photos[i]._id,user:req.body.user._id})
+                                                    LikePhoto.findOne({
+                                                        photo: event.photos[i]._id,
+                                                        user: req.body.user._id
+                                                    })
                                                         .lean()
                                                         .exec(function (err, like) {
                                                             numberOfPopulatedLikePhoto++;
@@ -535,14 +570,13 @@ exports.info = function (req, res) {
                     } else {
                         completion(err, event);
                     }
-                });
-            }
-
-            photoFunction(event, function(err, data){
+                })
+            };
+            photoFunction(event, function (err, data) {
                 if (err) {
                     return res.json(500, err);
                 }
-                return res.json(200, {code: 200, message:'Successful', data:data});
+                return res.json(200, {code: 200, message: 'Successful', data: data});
             });
 
         });
@@ -566,14 +600,14 @@ exports.delete = function (req, res) {
                             let numberToRemove = 0;
                             let albumId = photos[i].album;
                             albums[albumId] = 0;
-                            photos[i].remove(function(err){
+                            photos[i].remove(function (err) {
                                 if (!err) {
                                     albums[albumId] = albums[albumId] + 1;
                                 }
                                 numberToRemove++;
                                 if (numberToRemove == photos.length) {
                                     for (let albumKeyId in albums) {
-                                        Album.findById(albumKeyId, function(err, album){
+                                        Album.findById(albumKeyId, function (err, album) {
                                             if (!err && album) {
                                                 album.numberOfPhoto = album.numberOfPhoto - albums[albumKeyId];
                                                 album.save();

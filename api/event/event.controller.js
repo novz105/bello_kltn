@@ -12,6 +12,7 @@
 var _ = require('lodash');
 var Event = require('./event.model');
 var Notification = require('../notification/notification.model');
+var Subscription = require('../subscription/subscription.model');
 var Photo = require('../photo/photo.model');
 var Avatar = require('../avatar/avatar.model');
 var Cover = require('../cover/cover.model');
@@ -266,6 +267,7 @@ exports.timeline = function (req, res) {
                             if (numberOfPopulated3 == events.length) {
                                 completion4(events);
                             }
+
                         } else if (events[i].kind == 'EAlbum') {
                             if (events[i].album != undefined && events[i].album != null) {
                                 if (events[i].album.numberOfLike > 0) {
@@ -307,6 +309,81 @@ exports.timeline = function (req, res) {
                 }
 
                 var completion4 = function (events) {
+                    let numberOfPopulated4 = 0;
+                    for (let i = 0; i < events.length; i++) {
+                        if (events[i].kind == 'EPost') {
+                            Subscription.findOne({object: events[i]._id, owner: req.body.user._id}, function (err, sub) {
+                                if (!err && sub) {
+                                    events[i].sub = sub;
+                                }
+                                numberOfPopulated4++;
+                                if (numberOfPopulated4 == events.length) {
+                                    completion5(events);
+                                }
+                            });
+
+                        } else if (events[i].kind == 'EAlbum') {
+                            if (events[i].album != undefined && events[i].album != null) {
+                                Subscription.findOne({object: events[i].album._id, owner: req.body.user._id}, function (err, sub) {
+                                    if (!err && sub) {
+                                        events[i].album.sub = sub;
+                                    }
+                                    numberOfPopulated4++;
+                                    if (numberOfPopulated4 == events.length) {
+                                        completion5(events);
+                                    }
+                                });
+                            } else {
+                                numberOfPopulated4++;
+                                if (numberOfPopulated4 == events.length) {
+                                    completion5(events);
+                                }
+                            }
+                        } else if (events[i].kind == 'EAvatar') {
+                            if (events[i].avatar != undefined && events[i].avatar != null) {
+                                Subscription.findOne({object: events[i].avatar._id, owner: req.body.user._id}, function (err, sub) {
+                                    if (!err && sub) {
+                                        events[i].avatar.sub = sub;
+                                    }
+                                    numberOfPopulated4++;
+                                    if (numberOfPopulated4 == events.length) {
+                                        completion5(events);
+                                    }
+                                });
+                            } else {
+                                numberOfPopulated4++;
+                                if (numberOfPopulated4 == events.length) {
+                                    completion5(events);
+                                }
+                            }
+                        } else if (events[i].kind == 'ECover') {
+                            if (events[i].cover != undefined && events[i].cover != null) {
+                                Subscription.findOne({object: events[i].cover._id, owner: req.body.user._id}, function (err, sub) {
+                                    if (!err && sub) {
+                                        events[i].cover.sub = sub;
+                                    }
+                                    numberOfPopulated4++;
+                                    if (numberOfPopulated4 == events.length) {
+                                        completion5(events);
+                                    }
+                                });
+                            } else {
+                                numberOfPopulated4++;
+                                if (numberOfPopulated4 == events.length) {
+                                    completion5(events);
+                                }
+                            }
+                        } else {
+                            numberOfPopulated4++;
+                            if (numberOfPopulated4 == events.length) {
+                                completion5(events);
+                            }
+                        }
+
+                    }
+                }
+
+                var completion5 = function (events) {
                     let data = {
                         code: 200,
                         message: 'Successful',
@@ -627,6 +704,81 @@ exports.newsfeed = function (req, res) {
                         }
 
                         var completion4 = function (events) {
+                            let numberOfPopulated4 = 0;
+                            for (let i = 0; i < events.length; i++) {
+                                if (events[i].kind == 'EPost') {
+                                    Subscription.findOne({object: events[i]._id, owner: req.body.user._id}, function (err, sub) {
+                                        if (!err && sub) {
+                                            events[i].sub = sub;
+                                        }
+                                        numberOfPopulated4++;
+                                        if (numberOfPopulated4 == events.length) {
+                                            completion5(events);
+                                        }
+                                    });
+
+                                } else if (events[i].kind == 'EAlbum') {
+                                    if (events[i].album != undefined && events[i].album != null) {
+                                        Subscription.findOne({object: events[i].album._id, owner: req.body.user._id}, function (err, sub) {
+                                            if (!err && sub) {
+                                                events[i].album.sub = sub;
+                                            }
+                                            numberOfPopulated4++;
+                                            if (numberOfPopulated4 == events.length) {
+                                                completion5(events);
+                                            }
+                                        });
+                                    } else {
+                                        numberOfPopulated4++;
+                                        if (numberOfPopulated4 == events.length) {
+                                            completion5(events);
+                                        }
+                                    }
+                                } else if (events[i].kind == 'EAvatar') {
+                                    if (events[i].avatar != undefined && events[i].avatar != null) {
+                                        Subscription.findOne({object: events[i].avatar._id, owner: req.body.user._id}, function (err, sub) {
+                                            if (!err && sub) {
+                                                events[i].avatar.sub = sub;
+                                            }
+                                            numberOfPopulated4++;
+                                            if (numberOfPopulated4 == events.length) {
+                                                completion5(events);
+                                            }
+                                        });
+                                    } else {
+                                        numberOfPopulated4++;
+                                        if (numberOfPopulated4 == events.length) {
+                                            completion5(events);
+                                        }
+                                    }
+                                } else if (events[i].kind == 'ECover') {
+                                    if (events[i].cover != undefined && events[i].cover != null) {
+                                        Subscription.findOne({object: events[i].cover._id, owner: req.body.user._id}, function (err, sub) {
+                                            if (!err && sub) {
+                                                events[i].cover.sub = sub;
+                                            }
+                                            numberOfPopulated4++;
+                                            if (numberOfPopulated4 == events.length) {
+                                                completion5(events);
+                                            }
+                                        });
+                                    } else {
+                                        numberOfPopulated4++;
+                                        if (numberOfPopulated4 == events.length) {
+                                            completion5(events);
+                                        }
+                                    }
+                                } else {
+                                    numberOfPopulated4++;
+                                    if (numberOfPopulated4 == events.length) {
+                                        completion5(events);
+                                    }
+                                }
+
+                            }
+                        }
+
+                        var completion5 = function (events) {
                             let data = {
                                 code: 200,
                                 message: 'Successful',

@@ -109,34 +109,45 @@ exports.info = function (req, res) {
             if (!avatar) {
                 return res.json(200, {code: 404, message: 'Avatar not found'});
             } else {
-                if (avatar.numberOfLike > 0) {
-                    LikeAvatar.findOne({
-                        avatar: avatar._id,
-                        user: req.body.user._id
-                    }, function (err, like) {
-                        if (!err) {
-                            if (like) {
-                                avatar.like = {liked: true, data: like};
-                            } else {
-                                avatar.like = {liked: false};
+                let likeCompletion = function(avatar) {
+                    if (avatar.numberOfLike > 0) {
+                        LikeAvatar.findOne({
+                            avatar: avatar._id,
+                            user: req.body.user._id
+                        }, function (err, like) {
+                            if (!err) {
+                                if (like) {
+                                    avatar.like = {liked: true, data: like};
+                                } else {
+                                    avatar.like = {liked: false};
+                                }
                             }
-                        }
+                            let data = {
+                                code: 200,
+                                message: 'Successful',
+                                data: avatar
+                            }
+                            return res.json(200, data);
+                        });
+                    } else {
+                        avatar.like = {liked: false};
                         let data = {
                             code: 200,
                             message: 'Successful',
                             data: avatar
                         }
                         return res.json(200, data);
-                    });
-                } else {
-                    avatar.like = {liked: false};
-                    let data = {
-                        code: 200,
-                        message: 'Successful',
-                        data: avatar
                     }
-                    return res.json(200, data);
                 }
+                Subscription.findOne({object:avatar._id, owner:req.body.user._id}, function(err, sub){
+                    if (err) {
+                        return res.json(500, err);
+                    }
+                    if (sub) {
+                        avatar.sub = sub;
+                    }
+                    likeCompletion(avatar);
+                });
             }
         });
 }

@@ -167,12 +167,12 @@ exports.info = function (req, res) {
                                 } else {
                                     album.like = {liked: false};
                                 }
-                                completion3(album);
+                                completion2(album);
                             }
                         });
                     } else {
                         album.like = {liked: false};
-                        completion3(album);
+                        completion2(album);
                     }
                 }
 
@@ -193,6 +193,14 @@ exports.info = function (req, res) {
                 //        completion3(album);
                 //    }
                 //}
+                var completion2 = function(album) {
+                    Subscription.findOne({object:album._id, owner:req.body.user._id}, function(err, sub){
+                        if (!err && sub) {
+                            album.sub = sub;
+                        }
+                        completion3(album);
+                    })
+                }
                 var completion3 = function(album) {
                     let data = {
                         code: 200,

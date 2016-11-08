@@ -109,34 +109,46 @@ exports.info = function (req, res) {
             if (!cover) {
                 return res.json(200, {code: 404, message: 'Cover not found'});
             } else {
-                if (cover.numberOfLike > 0) {
-                    LikeCover.findOne({
-                        cover: cover._id,
-                        user: req.body.user._id
-                    }, function (err, like) {
-                        if (!err) {
-                            if (like) {
-                                cover.like = {liked: true, data: like};
-                            } else {
-                                cover.like = {liked: false};
+
+                let likeCompletion = function(cover) {
+                    if (cover.numberOfLike > 0) {
+                        LikeCover.findOne({
+                            cover: cover._id,
+                            user: req.body.user._id
+                        }, function (err, like) {
+                            if (!err) {
+                                if (like) {
+                                    cover.like = {liked: true, data: like};
+                                } else {
+                                    cover.like = {liked: false};
+                                }
                             }
-                        }
+                            let data = {
+                                code: 200,
+                                message: 'Successful',
+                                data: cover
+                            }
+                            return res.json(200, data);
+                        });
+                    } else {
+                        cover.like = {liked: false};
                         let data = {
                             code: 200,
                             message: 'Successful',
                             data: cover
                         }
                         return res.json(200, data);
-                    });
-                } else {
-                    cover.like = {liked: false};
-                    let data = {
-                        code: 200,
-                        message: 'Successful',
-                        data: cover
                     }
-                    return res.json(200, data);
                 }
+                Subscription.findOne({object:cover._id, owner:req.body.user._id}, function(err, sub){
+                    if (err) {
+                        return res.json(500, err);
+                    }
+                    if (sub) {
+                        cover.sub = sub;
+                    }
+                    likeCompletion(cover);
+                });
             }
         });
 }
