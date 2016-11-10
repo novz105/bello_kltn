@@ -35,6 +35,7 @@ module.exports = function(app) {
     app.use('/api/conversation', require('./api/conversation'));
     app.use('/api/friend', require('./api/friend'));
     app.use('/api/notification', require('./api/notification'));
+    app.use('/api/subscription', require('./api/subscription'));
     //app.use('/api/things', require('./api/thing'));
 
     app.route('/:url(api|auth)/*')

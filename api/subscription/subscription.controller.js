@@ -10,8 +10,8 @@ var Cover = require('../cover/cover.model');
 var Album = require('../album/album.model');
 
 exports.create = function (req, res) {
-    if (req.body.user && req.body.user._id &&
-        req.body.kind && typeof req.body.kind === 'number' &&
+    if (req.body.owner != undefined &&
+        req.body.kind != undefined &&
         req.body.kind >= 10 && req.body.kind <= 14) {
         var createSub = function(dataSub) {
             Subscription.create(dataSub, function (err, sub) {
@@ -29,15 +29,15 @@ exports.create = function (req, res) {
                 if (!event) {
                     return res.json(200, {code: 404, message: 'Event not found'});
                 } else {
-                    Subscription.findOne({object: event._id, owner: req.body.user._id}, function (err, sub) {
+                    Subscription.findOne({object: event._id, owner: req.body.owner}, function (err, sub) {
                         if (err) {
                             return res.json(500, err);
                         }
                         if (!sub) {
                             let dataSub = {
                                 object: event._id,
-                                owner: req.body.user._id,
-                                kind: event.user._id.toString() != req.body.user._id.toString() ? req.body.kind : 0
+                                owner: req.body.owner,
+                                kind: event.user.toString() != req.body.owner.toString() ? req.body.kind : 0
                             }
                             return createSub(dataSub);
                         } else {
@@ -54,15 +54,15 @@ exports.create = function (req, res) {
                 if (!event) {
                     return res.json(200, {code: 404, message: 'Photo not found'});
                 } else {
-                    Subscription.findOne({object: photo._id, owner: req.body.user._id}, function (err, sub) {
+                    Subscription.findOne({object: photo._id, owner: req.body.owner}, function (err, sub) {
                         if (err) {
                             return res.json(500, err);
                         }
                         if (!sub) {
                             let dataSub = {
                                 object: photo._id,
-                                owner: req.body.user._id,
-                                kind: photo.user._id.toString() != req.body.user._id.toString() ? req.body.kind : 1
+                                owner: req.body.owner,
+                                kind: photo.user.toString() != req.body.owner.toString() ? req.body.kind : 1
                             }
                             return createSub(dataSub);
                         } else {
@@ -79,15 +79,15 @@ exports.create = function (req, res) {
                 if (!event) {
                     return res.json(200, {code: 404, message: 'Avatar not found'});
                 } else {
-                    Subscription.findOne({object: avatar._id, owner: req.body.user._id}, function (err, sub) {
+                    Subscription.findOne({object: avatar._id, owner: req.body.owner}, function (err, sub) {
                         if (err) {
                             return res.json(500, err);
                         }
                         if (!sub) {
                             let dataSub = {
                                 object: avatar._id,
-                                owner: req.body.user._id,
-                                kind: avatar.user._id.toString() != req.body.user._id.toString() ? req.body.kind : 2
+                                owner: req.body.owner,
+                                kind: avatar.user.toString() != req.body.owner.toString() ? req.body.kind : 2
                             }
                             return createSub(dataSub);
                         } else {
@@ -104,15 +104,15 @@ exports.create = function (req, res) {
                 if (!event) {
                     return res.json(200, {code: 404, message: 'Cover not found'});
                 } else {
-                    Subscription.findOne({object: cover._id, owner: req.body.user._id}, function (err, sub) {
+                    Subscription.findOne({object: cover._id, owner: req.body.owner}, function (err, sub) {
                         if (err) {
                             return res.json(500, err);
                         }
                         if (!sub) {
                             let dataSub = {
                                 object: cover._id,
-                                owner: req.body.user._id,
-                                kind: cover.user._id.toString() != req.body.user._id.toString() ? req.body.kind : 3
+                                owner: req.body.owner,
+                                kind: cover.user.toString() != req.body.owner.toString() ? req.body.kind : 3
                             }
                             return createSub(dataSub);
                         } else {
@@ -129,15 +129,15 @@ exports.create = function (req, res) {
                 if (!event) {
                     return res.json(200, {code: 404, message: 'Album not found'});
                 } else {
-                    Subscription.findOne({object: album._id, owner: req.body.user._id}, function (err, sub) {
+                    Subscription.findOne({object: album._id, owner: req.body.owner}, function (err, sub) {
                         if (err) {
                             return res.json(500, err);
                         }
                         if (!sub) {
                             let dataSub = {
                                 object: album._id,
-                                owner: req.body.user._id,
-                                kind: album.user._id.toString() != req.body.user._id.toString() ? req.body.kind : 4
+                                owner: req.body.owner,
+                                kind: album.user.toString() != req.body.owner.toString() ? req.body.kind : 4
                             }
                             return createSub(dataSub);
                         } else {
@@ -153,6 +153,7 @@ exports.create = function (req, res) {
 };
 
 exports.delete = function (req, res) {
+
     Subscription.findById(req.body._id, function (err, subs) {
         if (err) {
             return res.json(500, err);
