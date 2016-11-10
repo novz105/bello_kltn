@@ -51,7 +51,7 @@ exports.create = function (req, res) {
                 if (err) {
                     return res.json(500, err);
                 }
-                if (!event) {
+                if (!photo) {
                     return res.json(200, {code: 404, message: 'Photo not found'});
                 } else {
                     Subscription.findOne({object: photo._id, owner: req.body.owner}, function (err, sub) {
@@ -76,7 +76,7 @@ exports.create = function (req, res) {
                 if (err) {
                     return res.json(500, err);
                 }
-                if (!event) {
+                if (!avatar) {
                     return res.json(200, {code: 404, message: 'Avatar not found'});
                 } else {
                     Subscription.findOne({object: avatar._id, owner: req.body.owner}, function (err, sub) {
@@ -101,7 +101,7 @@ exports.create = function (req, res) {
                 if (err) {
                     return res.json(500, err);
                 }
-                if (!event) {
+                if (!cover) {
                     return res.json(200, {code: 404, message: 'Cover not found'});
                 } else {
                     Subscription.findOne({object: cover._id, owner: req.body.owner}, function (err, sub) {
@@ -126,7 +126,7 @@ exports.create = function (req, res) {
                 if (err) {
                     return res.json(500, err);
                 }
-                if (!event) {
+                if (!album) {
                     return res.json(200, {code: 404, message: 'Album not found'});
                 } else {
                     Subscription.findOne({object: album._id, owner: req.body.owner}, function (err, sub) {
