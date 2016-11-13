@@ -103,7 +103,11 @@ exports.list = function (req, res) {
             if (err) {
                 return res.json(500, err);
             }
-            return res.json(200, {code: 200, message: 'Successful', data: likes});
+            var users = [];
+            for (let i = 0; i < likes.length; i++) {
+                users.push(likes[i].user);
+            }
+            return res.json(200, {code: 200, message: 'Successful', data: users});
         });
 }
 
