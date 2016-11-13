@@ -84,6 +84,23 @@ exports.create = function (req, res) {
     });
 }
 
+exports.list = function (req, res) {
+    var photoId = req.body.avatar._id;
+    var limit = req.body.limit;
+    var offset = req.body.offset;
+    LikePhoto.find({album: photoId})
+        .skip(offset)
+        .limit(limit)
+        .sort({"_id": -1})
+        .populate('user')
+        .exec(function (err, likes) {
+            if (err) {
+                return res.json(500, err);
+            }
+            return res.json(200, {code: 200, message: 'Successful', data: likes});
+        });
+}
+
 exports.delete = function (req, res) {
     var likeId = req.body._id;
     LikePhoto.findById(likeId, function (err, like) {
