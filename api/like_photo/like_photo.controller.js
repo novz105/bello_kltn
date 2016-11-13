@@ -88,7 +88,7 @@ exports.list = function (req, res) {
     var photoId = req.body.photo._id;
     var limit = req.body.limit;
     var offset = req.body.offset;
-    LikePhoto.find({album: photoId})
+    LikePhoto.find({photo: photoId})
         .skip(offset)
         .limit(limit)
         .sort({"_id": -1})

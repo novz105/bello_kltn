@@ -94,7 +94,7 @@ exports.list = function (req, res) {
     var eventId = req.body.event._id;
     var limit = req.body.limit;
     var offset = req.body.offset;
-    LikePost.find({album: eventId})
+    LikePost.find({event: eventId})
         .skip(offset)
         .limit(limit)
         .sort({"_id": -1})
