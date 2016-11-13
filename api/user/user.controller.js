@@ -74,8 +74,8 @@ exports.create = function (req, res) {
         return res.json(200, {code: 401, message: 'Email cannot be blank'});
     }
 
-    if (!password || !password.length) {
-        return res.json(200, {code: 401, message: 'Password cannot be blank'});
+    if (!password || password.length < 6) {
+        return res.json(200, {code: 401, message: 'Password must be at least 6 characters'});
     }
 
     if (!name || !name.length) {
@@ -190,24 +190,28 @@ exports.changePassword = function (req, res) {
     var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
 
-    User.findById(userId, function (err, user) {
-        if (err) {
-            return res.json(500, err);
-        }
-        if (!user) {
-            return res.json(200, {code: 404, message: 'User not found'});
-        }
+    if (userId != undefined && oldPass != undefined && newPass != undefined && newPass.length >= 6) {
+        User.findById(userId, function (err, user) {
+            if (err) {
+                return res.json(500, err);
+            }
+            if (!user) {
+                return res.json(200, {code: 404, message: 'User not found'});
+            }
 
-        if (user.authenticate(oldPass)) {
-            user.password = newPass;
-            user.save(function (err) {
-                if (err) {
-                    return res.json(500, err);
-                }
-                res.json(200, {code: 200, message: 'Your password just changed'});
-            });
-        } else {
-            res.json(200, {code: 404, message: 'Your old password is not correct'});
-        }
-    });
+            if (user.authenticate(oldPass)) {
+                user.password = newPass;
+                user.save(function (err) {
+                    if (err) {
+                        return res.json(500, err);
+                    }
+                    res.json(200, {code: 200, message: 'Your password just changed'});
+                });
+            } else {
+                res.json(200, {code: 404, message: 'Your old password is not correct'});
+            }
+        });
+    } else {
+        return res.json(200, {code:401, message: 'Params error'});
+    }
 };
