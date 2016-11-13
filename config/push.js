@@ -90,7 +90,7 @@ var Push = {
             note.topic = "com.kltn.bellotest";
             note.payload = {type: 'req', noti:user.notification, msg:user.message, req:user.request};
             note.badge = user.notification + user.message + user.request;
-            note.alert = user.name + 'sent you a friend request';
+            note.alert = user.name + ' sent you a friend request';
             console.log(`Sending: ${note.compile()} to ${tokens}`);
             Push.service.send(note, tokens).then(result => {
                 console.log("sent:", result.sent.length);
