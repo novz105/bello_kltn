@@ -85,7 +85,7 @@ exports.create = function (req, res) {
 }
 
 exports.list = function (req, res) {
-    var photoId = req.body.avatar._id;
+    var photoId = req.body.photo._id;
     var limit = req.body.limit;
     var offset = req.body.offset;
     LikePhoto.find({album: photoId})

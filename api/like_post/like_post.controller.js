@@ -91,7 +91,7 @@ exports.create = function (req, res) {
 }
 
 exports.list = function (req, res) {
-    var eventId = req.body.avatar._id;
+    var eventId = req.body.event._id;
     var limit = req.body.limit;
     var offset = req.body.offset;
     LikePost.find({album: eventId})

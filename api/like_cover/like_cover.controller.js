@@ -85,7 +85,7 @@ exports.create = function (req, res) {
 }
 
 exports.list = function (req, res) {
-    var coverId = req.body.avatar._id;
+    var coverId = req.body.cover._id;
     var limit = req.body.limit;
     var offset = req.body.offset;
     LikeCover.find({album: coverId})
