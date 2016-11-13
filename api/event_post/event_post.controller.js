@@ -595,9 +595,9 @@ exports.delete = function (req, res) {
                 .limit(event.numberOfPhoto)
                 .exec(function (err, photos) {
                     if (!err && photos && photos.length > 0) {
+                        let albums = {};
+                        let numberToRemove = 0;
                         for (let i = 0; i < photos.length; i++) {
-                            let albums = {};
-                            let numberToRemove = 0;
                             let albumId = photos[i].album;
                             albums[albumId] = 0;
                             photos[i].remove(function (err) {
